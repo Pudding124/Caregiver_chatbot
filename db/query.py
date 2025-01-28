@@ -2,21 +2,25 @@ import chromadb
 from sentence_transformers import SentenceTransformer
 import json
 
-chroma_client = chromadb.PersistentClient(path="./chroma_db")
-collection = chroma_client.get_or_create_collection(name="rag_docs")
+class Chroma():
 
-model = SentenceTransformer("intfloat/multilingual-e5-base")
+    def __init__(self):
+        self.chroma_client = chromadb.PersistentClient(path="E://taiwan_care/db/chroma_db")
+        self.collection = self.chroma_client.get_or_create_collection(name="rag_docs")
+        self.model = SentenceTransformer("intfloat/multilingual-e5-base")
 
-query_text = "希望可以協助運動復健"
-query_embedding = model.encode(["query: " + query_text])[0]
-
-# 从 ChromaDB 查询最相似的 2 条数据
-results = collection.query(
-    query_embeddings=[query_embedding.tolist()],
-    n_results=2
-)
-
-# 输出查询结果（包含 ID）
-print("查询结果：")
-for doc_id, doc_text, score in zip(results["ids"][0], results["documents"][0], results["distances"][0]):
-    print(f"ID: {doc_id}, 文档: {doc_text}, 相似度: {score:.4f}")
+    def get_top3_result(self, feature):
+        feature_list = ", ".join(feature)
+        query_embedding = self.model.encode(["query: " + feature_list])[0]
+        results = self.collection.query(
+            query_embeddings=[query_embedding.tolist()],
+            n_results=3
+        )
+        all_doc_id = []
+        all_doc_text = []
+        for doc_id, doc_text, score in zip(results["ids"][0], results["documents"][0], results["distances"][0]):
+            all_doc_id.append(doc_id)
+            all_doc_text.append(doc_text[:30] + "...")
+            # print(f"ID: {doc_id}, 文档: {doc_text}, 相似度: {score:.4f}")
+        
+        return all_doc_id, all_doc_text

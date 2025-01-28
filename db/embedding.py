@@ -2,7 +2,7 @@ import chromadb
 from sentence_transformers import SentenceTransformer
 import json
 
-chroma_client = chromadb.PersistentClient(path="./chroma_db")
+chroma_client = chromadb.PersistentClient(path="E:/taiwan_care/db/chroma_db")
 collection = chroma_client.get_or_create_collection(name="rag_docs")
 
 model = SentenceTransformer("intfloat/multilingual-e5-base")
@@ -19,4 +19,4 @@ for content in data:
         embeddings=[embedding]
     )
 
-print(f"已存入 {collection.count()} 条数据")
+print(f"已存入 {collection.count()} 筆")

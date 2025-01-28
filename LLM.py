@@ -6,7 +6,7 @@ from history import get_history, setup_history
 import json
 
 
-class LLM():
+class OllamaLLMModel():
     def __init__(self, model, base_url):
         self.llm = OllamaLLM(model=model, base_url=base_url)
 
@@ -28,9 +28,10 @@ class LLM():
                 以下是用戶的問題
                 {qustion}
 
-                最後請只要回傳 JSON 格式，不要說明或介紹，格式如下
-
-                {{"caregiver_intent": true, "feature": ["male", "english", "24 hours"]}}
+                最後請只要回傳 JSON 格式，不要說明或介紹，格式如下：
+                {{'caregiver_intent': bool, 'feature': list}}
+                範例如下：
+                {{"caregiver_intent": True, "feature": ["男生", "英語", "全日照顧", "復健"]}}
             """
 
             # 讓 LLM 產生回應
@@ -54,20 +55,17 @@ class LLM():
                 return_messages=True
             )
 
-            if len(history.message) == 0:
+            if history.messages:
                 prompt = ChatPromptTemplate.from_messages([
                     ("system", "你是一位專業的看護仲介，會幫助使用者回答有關於醫療看護的問題，並且會提供看護人選供客戶使用"),
-                    MessagesPlaceholder(variable_name="history"),  # 插入歷史對話
-                    ("human", "{question}")  # 當前用戶輸入
+                    MessagesPlaceholder(variable_name="history"), 
+                    ("human", "{question}")
                 ])
             else:
-                # 創建 Prompt 模板
                 prompt = ChatPromptTemplate.from_messages([
-                    MessagesPlaceholder(variable_name="history"),  # 插入歷史對話
-                    ("human", "{question}")  # 當前用戶輸入
+                    MessagesPlaceholder(variable_name="history"),
+                    ("human", "{question}")
                 ])
-
-            # print(memory.load_memory_variables({})["history"])
 
             chain = prompt | self.llm
 
@@ -80,6 +78,7 @@ class LLM():
             setup_history(history, question, response)
 
             return response
-        except Exception:
+        except Exception as error:
+            print(f"Error :{error}")
             return "聊天機器人忙碌中，請再次輸入你的問題，謝謝"
 

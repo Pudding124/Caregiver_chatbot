@@ -1,4 +1,5 @@
 import json
+import re
 
 class EmbeddingInfo:
     def __init__(self, id, doc):
@@ -17,9 +18,10 @@ with open('tide_up_data.json', 'r', encoding='utf-8') as file:
 pre_embedding_data = []
 
 for person in data:
-    id = person['id']
+    id = person['id'] + "-" + person['name']
+    person['description'] = person['description'].replace("\n", '')
     doc = f"{person['description']}, 能夠提供的服務有{person['service_rule']}"
-
+    
     embedding = EmbeddingInfo(id, doc)
     pre_embedding_data.append(embedding.to_dict())
 

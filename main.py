@@ -4,7 +4,7 @@ from db.query import Chroma
 def main():
 
     user_session_id = "test_user_2"
-    user_question = "我媽媽有腎臟病，想要尋找中文看護，只需要照顧早上就好"
+    user_question = "我媽媽有糖尿病，需要定期找人陪伴看醫生，請推薦給我看護"
 
 
     LLM_model = OllamaLLMModel(model="llama3.1:8b", base_url="http://127.0.0.1:8888")

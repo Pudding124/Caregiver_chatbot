@@ -39,9 +39,13 @@ class OllamaLLMModel():
                 "question": prompt_question
             })
 
-            # print(f"response: {response}")
+            print(f"response: {response}")
 
-            return json.loads(response)
+            extract_data = json.loads(response)
+
+            return extract_data
+        except json.JSONDecodeError as e:
+            return json.loads({"caregiver_intent": False, "feature": []})
         except Exception:
             return json.loads({"caregiver_intent": False, "feature": []})
         
